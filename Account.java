@@ -6,7 +6,7 @@ public class Account
 {
     private float balance;
     private final int MAX_PORTFOLIOS = 3;
-    private Portfolio[] portfolios = new Portfolio[MAX_PORTFOLIOS];
+    private Portfolio<Asset>[] portfolios = new Portfolio[MAX_PORTFOLIOS];
     private int portfolioCount;
     
     public Account()
@@ -15,13 +15,13 @@ public class Account
         portfolioCount = 0;
     }
 
-    public void addPortfolio(Portfolio p)
+    public void addPortfolio(Portfolio<Asset> p)
     {
         if (portfolioCount < MAX_PORTFOLIOS)
             portfolios[portfolioCount++] = p;
     }
 
-    public Portfolio[] getPortfolios()
+    public Portfolio<Asset>[] getPortfolios()
     {
         return portfolios;
     }
