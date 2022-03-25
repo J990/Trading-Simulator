@@ -1,47 +1,57 @@
 /*
-** Defines a user's monetary balance
-** and the portfolios that they have
+** Defines the actions a user can have
+** on their monetary balance
+** and their portfolio
 */
 public class Account
 {
-    private float balance;
-    private final int MAX_PORTFOLIOS = 3;
-    private Portfolio<Asset>[] portfolios = new Portfolio[MAX_PORTFOLIOS];
-    private int portfolioCount;
+    private Bank bankAccount;
+    private Portfolio portfolio;
     
     public Account()
     {
-        balance = 0.0f;
-        portfolioCount = 0;
+        bankAccount = new Bank();
+        portfolio = new Portfolio();
     }
 
-    public void addPortfolio(Portfolio<Asset> p)
+    public double getRawBalance() {  // Returns the balance
+        return bankAccount.getBalance();
+    }
+
+    public String getConvertedBalance() {  // Formats balance to currency
+        return CurrencyConverter.convert(bankAccount.getBalance());
+    }
+
+    // Deposits money into bank
+    // True = success. False = deposit is too small
+    public boolean addMoney(double amount)
     {
-        if (portfolioCount < MAX_PORTFOLIOS)
-            portfolios[portfolioCount++] = p;
+        try {
+            bankAccount.deposit(amount);
+            return true;
+        } catch (SmallDepositException err) {
+            return false;
+        }
     }
 
-    public Portfolio<Asset>[] getPortfolios()
+    // Withdraws money from bank
+    // True = success. False = balance is smaller than withdrawal requested
+    public boolean removeMoney(double amount)
     {
-        return portfolios;
+        try {
+            bankAccount.withdraw(amount);
+            return true;
+        } catch (SmallWithdrawalException err) {
+            System.err.println(err);
+            return false;
+        }
     }
 
-    public float getRawBalance() {return balance;}  // Returns the balance
-    public String getConvertedBalance() {return CurrencyConverter.convert(balance);}  // Formats balance to currency
-
-    public void deposit(float amount)
-    {
-        balance += amount;
+    public Portfolio getPortfolio() {
+        return portfolio;
     }
 
-    /*
-    ** Deducts an amount from the balance
-    ** Sets balance to 0 if amount is greater than the balance
-    */
-    public void withdraw(float amount)
-    {
-        if (amount <= this.balance) {this.balance -= amount;}  // Withdrawal succeeded
-        else {this.balance = 0;}  // Withdrawal greater than balance
-    }
+    public void buyAsset(Asset a) {}
+    public void sellAsset(Asset a) {}
 
 }
