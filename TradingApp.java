@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Random;
 
 public class TradingApp extends Frame
 {
@@ -25,13 +26,16 @@ public class TradingApp extends Frame
         test = new Label(account.getConvertedBalance(), Label.CENTER);
         test.setBackground(Color.RED);
         test.setForeground(Color.WHITE);
+        test.setPreferredSize(new Dimension(250, 100));
         this.add(test);
 
-        Button test1 = new Button("Add 100 to balance");
+        Button test1 = new Button("Update BTC price");
         test1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                account.addMoney(100);
-                test.setText(account.getConvertedBalance());
+                Random rand = new Random();
+                account.addMoney(100000);
+                StockAsset a = new StockAsset("Bitcoin", "BTC", 40000 + rand.nextDouble() * 1000);
+                test.setText(a.toString() + ": " + a.getCurrencyUnitValue());
             }
         });
 

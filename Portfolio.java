@@ -3,37 +3,56 @@ import java.util.Iterator;
 
 public class Portfolio
 {
-    ArrayList<AssetRecord> assetReceipts;  // Keeps track of all the assets that have been bought
-    ArrayList<AssetRecord> assets;
-    ArrayList<AssetRecord> soldAssets;  // Keeps track of the assets that have been sold and in what quantities
+    private ArrayList<Trade> trades;  // Keeps track of all the trades made
+    private Profit portfolioProfit;
 
     public Portfolio()
     {
-        assetReceipts = new ArrayList<AssetRecord>();
-        assets = new ArrayList<AssetRecord>();
-        soldAssets = new ArrayList<AssetRecord>();
+        trades = new ArrayList<Trade>();
+        portfolioProfit = new Profit();
     }
 
-    public void addAsset(AssetRecord ar)
+    public void addTrade(Trade t)
     {
-        assetReceipts.add(ar);
-        Iterator<AssetRecord> it = assets.iterator();
-        while (it.hasNext())
+        trades.add(t);
+        try {
+            portfolioProfit.addTrade(t);
+        } catch (AssetTypeException e) {/* Do nothing as it's a generic asset type */}
+    }
+
+    public Profit generateAssetProfit(Asset a)
+    {
+        Profit assetProfits = new Profit(a);
+        for (Trade t: trades)
         {
-            AssetRecord record = it.next();
-            if (record.getAsset().getSymbol().equals(ar.getAsset().getSymbol()))  // Same asset
-            {
-                //
-            }
+            try {
+                assetProfits.addTrade(t);
+            } catch (AssetTypeException e) {/* Do nothing if wrong asset */}
         }
-        // Merge repeated assets by adding the units together and removing repeated AssetRecords
+        return assetProfits;
     }
 
-    public void removeAsset(Asset a, double value)
-    {
-        double unitsSold = value / a.getRawUnitValue();
-        System.out.println(unitsSold);
-        // Do some validation to check if the portfolio has enough units to sell
-        // Remove 
+    public Profit getPortfolioProfit() {
+        portfolioProfit.update();
+        return portfolioProfit;
     }
+
+    public ArrayList<Trade> filterByAsset(Asset a)
+    {
+        ArrayList<Trade> filteredTrades = new ArrayList<Trade>();
+        for (Trade t: trades)
+            if (t.getAsset().equals(a))
+                filteredTrades.add(t);
+        return filteredTrades;
+    }
+
+    public ArrayList<Trade> filterByAssetType(Asset a)
+    {
+        ArrayList<Trade> filteredTrades = new ArrayList<Trade>();
+        for (Trade t: trades)
+            if (t.getAsset().getClass() == a.getClass())
+                filteredTrades.add(t);
+        return filteredTrades;
+    }
+
 }

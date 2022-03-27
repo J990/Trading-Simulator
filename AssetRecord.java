@@ -1,45 +1,47 @@
+import java.util.Date;
+
 /**
  * A receipt for any assets that are bought
  * For a single purchase
  */
-public class AssetRecord extends Record
+public final class AssetRecord extends Record implements StaticAsset
 {
-    private Asset asset;
-    private double totalPrice;
-    private double units;
-    private double unitPrice;
+    private final Asset ASSET;
+    private final double OPEN_UNIT_PRICE;  // Price per unit at time trade occurred
+    private final double UNITS;
+    private final Date DATE;
 
-    public AssetRecord(Asset a, double price)
+    public AssetRecord(Trade t)
     {
-        unitPrice = a.getRawUnitValue();  // Done first to prevent price inconsistencies
-        asset = a;
-        totalPrice = price;
-        units = price / unitPrice;
+        ASSET = t.getAsset();
+        OPEN_UNIT_PRICE = t.getOpenUnitPrice();
+        UNITS = t.getUnits();
+        DATE = t.getDate();
     }
 
     public Asset getAsset() {
-        return asset;
-    }
-
-    public double getTotalPrice() {
-        return totalPrice;
-    }
-
-    public double getUnitPrice() {
-        return unitPrice;
+        return ASSET;
     }
 
     public double getUnits() {
-        return units;
+        return UNITS;
+    }
+
+    public double getOpenUnitPrice() {
+        return OPEN_UNIT_PRICE;
+    }
+
+    public Date getDate() {
+        return DATE;
     }
 
     public String toJSON() {
         return String.format(
-            "{\"asset\": \"%s\",\"totalPrice\": \"%d\",\"units\": \"%d\",\"unitPrice\": \"%d\"",
-            asset.toString(),
-            totalPrice,
-            units,
-            unitPrice
+            "{\"asset\": \"%s\",\"units\": \"%d\",\"unitPrice\": \"%d\"",
+            ASSET.toString(),
+            UNITS,
+            OPEN_UNIT_PRICE
         );
     }
+
 }

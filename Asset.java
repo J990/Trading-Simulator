@@ -3,14 +3,12 @@ public abstract class Asset
     private String name;
     private String symbol;
     private double unitValue;
-    private double unitsBought;
 
     public Asset(String name, String symbol, double initialValue)
     {
         this.name = name;
         this.symbol = symbol.toUpperCase();
         this.unitValue = initialValue;
-        unitsBought = 0.0d;
     }
 
     public String getName() {
@@ -29,19 +27,9 @@ public abstract class Asset
         return CurrencyConverter.convert(this.unitValue);
     }
 
-    public double getUnitsBought() {
-        return unitsBought;
-    }
-    
-    public void addUnits(double units) {
-        if (Math.abs(units) > unitsBought)
-        {
-            // Cancel add (raise exception?)
-        }
-        else
-        {
-            unitsBought += units;
-        }
+    // Returns a receipt of a share bought
+    public Trade createTrade(double units) {
+        return new Trade(this, getRawUnitValue(), units);
     }
 
     public String toString()
@@ -51,7 +39,5 @@ public abstract class Asset
 
     // Updates the asset price
     public abstract void updateUnitPrice();
-    // Returns a receipt of a share bought
-    public abstract AssetRecord buyShare(double value);
 
 }
