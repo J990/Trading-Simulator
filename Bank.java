@@ -38,10 +38,10 @@ public class Bank
 
     // Removes money from the bank
     // Throws an exception if the amount withdrawn is bigger than the bank balance
-    public void withdraw(double amount) throws SmallWithdrawalException
+    public void withdraw(double amount) throws SmallBalanceException
     {
         if (amount > balance)  // Ampunt is greater than balance
-            throw new SmallWithdrawalException("Withdrawal (" + amount + ") is greater than balance (" + balance + ")");
+            throw new SmallBalanceException("Withdrawal (" + amount + ") is greater than balance (" + balance + ")");
         else // Takes out money
         {
             balance -= amount;

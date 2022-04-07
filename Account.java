@@ -36,14 +36,12 @@ public class Account
 
     // Withdraws money from bank
     // True = success. False = balance is smaller than withdrawal requested
-    public boolean removeMoney(double amount)
+    public void removeMoney(double amount) throws SmallBalanceException
     {
         try {
             bankAccount.withdraw(amount);
-            return true;
-        } catch (SmallWithdrawalException err) {
-            System.err.println(err);
-            return false;
+        } catch (SmallBalanceException err) {
+            throw err;
         }
     }
 
@@ -51,7 +49,25 @@ public class Account
         return portfolio;
     }
 
-    public void buyAsset(Asset a) {}
-    public void sellAsset(Asset a) {}
+    public void openTrade(Asset a, double price) throws SmallBalanceException
+    {
+        double units = price / a.getRawUnitValue();
+        try {
+            removeMoney(price);
+            portfolio.addTrade(a.createTrade(units));
+        } catch (SmallBalanceException err) {
+            throw err;
+        }
+    }
+
+    public void closeTrade(Trade t) throws UnknownTradeException
+    {
+        try {
+            portfolio.removeTrade(t);
+            addMoney(t.currentValue());
+        } catch (UnknownTradeException err) {
+            throw err;
+        }
+    }
 
 }

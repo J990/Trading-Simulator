@@ -4,6 +4,7 @@ import java.util.Iterator;
 public class Portfolio
 {
     private ArrayList<Trade> trades;  // Keeps track of all the trades made
+    private ArrayList<AssetRecord> receipts;
     private Profit portfolioProfit;
 
     public Portfolio()
@@ -15,9 +16,26 @@ public class Portfolio
     public void addTrade(Trade t)
     {
         trades.add(t);
-        try {
-            portfolioProfit.addTrade(t);
-        } catch (AssetTypeException e) {/* Do nothing as it's a generic asset type */}
+        portfolioProfit.addTrade(t);
+    }
+
+    public void removeTrade(Trade t) throws UnknownTradeException
+    {
+        if (hasTrade(t) != null)
+        {
+            trades.remove(t);
+            receipts.add(t.generateReceipt());
+        }
+        else {
+            throw new UnknownTradeException(t);
+        }
+    }
+
+    private Trade hasTrade(Trade t)
+    {
+        for (Trade trade: trades)
+            if (t.getID() == trade.getID()) return trade;
+        return null;
     }
 
     public Profit generateAssetProfit(Asset a)
@@ -46,11 +64,11 @@ public class Portfolio
         return filteredTrades;
     }
 
-    public ArrayList<Trade> filterByAssetType(Asset a)
+    public ArrayList<Trade> filterByAssetType(String assetType)
     {
         ArrayList<Trade> filteredTrades = new ArrayList<Trade>();
         for (Trade t: trades)
-            if (t.getAsset().getClass() == a.getClass())
+            if (t.getAsset().getAssetType().equals(assetType.toLowerCase()))
                 filteredTrades.add(t);
         return filteredTrades;
     }

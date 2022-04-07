@@ -7,6 +7,8 @@ public final class Trade implements StaticAsset
     private final double UNITS;
     private final double OPEN_VALUE;
     private final Date DATE;
+    private final int ID;
+    static int idCounter = 0;
 
     public Trade(Asset a, double o, double u)
     {
@@ -15,10 +17,15 @@ public final class Trade implements StaticAsset
         UNITS = u;
         OPEN_VALUE = OPEN_UNIT_PRICE * UNITS;
         DATE = new Date();
+        ID = idCounter++;
     }
 
     public Asset getAsset() {
         return ASSET;
+    }
+
+    public int getID() {
+        return ID;
     }
 
     public double getOpenUnitPrice() {
