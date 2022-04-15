@@ -1,13 +1,38 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class TradingApp extends Frame
+import javax.swing.*;
+import javax.swing.JSpinner.NumberEditor;
+
+public class TradingApp extends JFrame
 {
-    private Label balanceText;
-    private Button portfolioButton;
+    public static Account account;  // User account
+
+    private static JFrame frame;  // Main frame which displays all panels
+    private static GUI gui; 
+    private static final Button BACK_BUTTON = new Button("Back");
+
+    private static Stack<String> panelStack;
+    private static final String MENU = "menu";
+    private static final String ACCOUNT = "account";
+    private static final String PORTFOLIO = "portfolio";
+    private static final String MARKET = "market";
+
+    private static Button menuAccButton;
+    private static Button menuPortfolioButton;
+    private static Button menuStocksButton;
+
+    private static Label accountHeader;
+    private static Label accountBalance;
+    private static Button accountDepositButton;
+    private static Button accountMenuButton;
+
+    private JPanel panel;
+    private JButton portfolioButton;
     private Button depositButton;
     private Button withdrawButton;
     private Label portfolioContainer;
@@ -16,16 +41,18 @@ public class TradingApp extends Frame
 
     public TradingApp()
     {
+        /*
         super("Trading Simulator");
         initialiseAssets();
         Account account = new Account();
         account.addMoney(100000);
         System.out.println("1. Buy Stock\n2. Sell Stock\n3. View Portfolio\n4. Deposit\n5. Withdraw");
 
-        this.setLayout(new FlowLayout());
-
-        // Styles
-        this.setBackground(new Color(0, 128, 128));
+        //this.setLayout(new FlowLayout());
+        panel = new JPanel();
+        panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+        panel.setLayout(new GridLayout(0, 1));
+        this.add(panel, BorderLayout.CENTER);
         
         getAssetLabels();
 
@@ -33,14 +60,13 @@ public class TradingApp extends Frame
         {
             try {
                 account.openTrade(a, 1000);
-            } catch (SmallBalanceException e) {System.out.println("Oof");}
+            } catch (SmallBalanceException e) {}
         }
 
-        balanceText = new Label("Balance: " + account.getConvertedBalance(), Label.CENTER);
+        balanceText = new Label("Bank Balance: " + account.getConvertedBalance(), Label.CENTER);
         balanceText.setSize(1280, 100);
-        balanceText.setForeground(Color.WHITE);
         //balanceText.setPreferredSize(new Dimension(250, 100));
-        this.add(balanceText);
+        panel.add(balanceText);
 
         portfolioContainer = new Label("Profit: " + CurrencyConverter.convert(account.getPortfolio().getPortfolioProfit().getProfit()));
         Timer t = new Timer();
@@ -56,7 +82,7 @@ public class TradingApp extends Frame
             }
         }, 0, 1000);
 
-        portfolioButton = new Button("View Portfolio");
+        portfolioButton = new JButton("View Portfolio");
         portfolioButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //balanceText.setText("Portfolio");
@@ -67,10 +93,10 @@ public class TradingApp extends Frame
                 //TradingApp.this.add(new Label("Profit: " + CurrencyConverter.convert(account.getPortfolio().getPortfolioProfit().getProfit())));
             }
         });
-        this.add(portfolioButton);
+        panel.add(portfolioButton);
         TextField tField = new TextField(20);
         tField.setVisible(false);
-        this.add(tField);
+        panel.add(tField);
         depositButton = new Button("Deposit");
         depositButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -80,7 +106,7 @@ public class TradingApp extends Frame
                 tField.revalidate();
             }
         });
-        this.add(depositButton);
+        panel.add(depositButton);
 
         Asset a = new Asset("Bitcoin", "BTC", 40000, Asset.CRYPTOCURRENCY);
         withdrawButton = new Button("Withdraw");
@@ -94,7 +120,7 @@ public class TradingApp extends Frame
                 }
             }
         });
-        this.add(withdrawButton);
+        panel.add(withdrawButton);
 
         
         account.getPortfolio().addTrade(a.createTrade(0.1));
@@ -108,11 +134,11 @@ public class TradingApp extends Frame
             }
         });
 
-        this.add(test1);
-        this.add(portfolioContainer);
+        panel.add(test1);
+        panel.add(portfolioContainer);
         for (Label l: assetPrices)
         {
-            this.add(l);
+            panel.add(l);
         }
 
         // Allows window to close
@@ -122,14 +148,117 @@ public class TradingApp extends Frame
             }
         });
         
-        this.setSize(1280, 720);
+        this.pack();
+        //this.setSize(1280, 720);
 		this.setLocationRelativeTo(null); // Centers the window on the screen
-        this.setVisible(true);
+        this.setVisible(true);*/
+    }
+
+    public static void initialiseApp()
+    {
+        // Opens the account for the session
+        account = new Account();
+        account.addMoney(100000);
+
+        // Creates all the Asset objects
+        initialiseAssets();
+
+        // Sets up the back button feature
+        panelStack = new Stack<String>();
+        BACK_BUTTON.addActionListener(new ActionListener() { // Takes the user to the previous screen
+            public void actionPerformed(ActionEvent ev) {
+                panelStack.pop();  // Pops current panel
+                panelHandler(panelStack.pop());  // Pop again because panelHandler pushes popped item to stack again
+            }
+        });
+
+        // Builds the GUI and shows the menu screen
+        frame = new JFrame("Trading App");
+        gui = new GUI(frame, new SessionCloser());
+        panelHandler(MENU);
+        gui.initialiseWindow();
+    }
+
+    public static void panelHandler(String destination)
+    {
+        switch (destination)
+        {
+            case MENU:
+                showMenu();
+                break;
+            case ACCOUNT:
+                showAccountScreen();
+                break;
+            case PORTFOLIO:
+                showPortfolioScreen();
+                break;
+            case MARKET:
+                showAssets();
+                break;
+            default:
+                throw new DestinationError(destination);  // Invalid panel destination name
+        }
+        panelStack.push(destination);
+    }
+
+    public static void showMenu()
+    {
+        JPanel p = GUI.createPanel(0, 1);
+
+        p.add(new Label("Trading Simluator 1.0", Label.CENTER));
+        menuAccButton = GUI.createNavigationButton(p, "View Account", ACCOUNT);
+        menuPortfolioButton = GUI.createNavigationButton(p, "View Portfolio", PORTFOLIO);
+        menuStocksButton = GUI.createNavigationButton(p, "Buy Assets", MARKET);
+
+        //frame.add(p);
+        gui.displayPanel(p);
+    }
+
+    public static void showAccountScreen()
+    {
+        JPanel p = GUI.createPanel(0, 1);
+
+        p.add(new Label("Account Manager", Label.CENTER));
+        accountBalance = new Label("Balance: " + account.getConvertedBalance(), Label.CENTER);
+        p.add(accountBalance);
+        accountDepositButton = GUI.createButton(p, "Deposit");
+        accountMenuButton = GUI.createNavigationButton(p, "Menu", MENU);
+        p.add(BACK_BUTTON);
+
+        accountDepositButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                InputPrompt depositPrompt = new InputPrompt("Enter amount: ", "Deposit");
+                depositPrompt.addSubmitListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent ev) {
+                        try {
+                            Boolean success = account.addMoney(Double.parseDouble(depositPrompt.getInput()));
+                            if (success) {accountBalance.setText("Balance: " + account.getConvertedBalance());}
+                            else {throw new NumberFormatException();}
+                        } catch (NumberFormatException e) {
+                            new WarningPrompt("Deposit value must be a number greater than 0!");
+                        }
+                    }
+                });
+            }
+        });
+
+        gui.displayPanel(p);
+    }
+
+    public static void showPortfolioScreen()
+    {
+        System.out.println("p");
+    }
+
+    public static void showAssets()
+    {
+        System.out.println("l");
     }
 
     public static void main(String[] args)
     {
-        new TradingApp();
+        //new TradingApp();
+        initialiseApp();
     }
 
     private void getAssetLabels()
@@ -145,11 +274,11 @@ public class TradingApp extends Frame
         assets.add(new Asset("Bitcoin", "BTC", 40000, Asset.CRYPTOCURRENCY));
         assets.add(new Asset("Ethereum", "ETH", 3000, Asset.CRYPTOCURRENCY));
         assets.add(new Asset("Amazon.com, Inc.", "AMZN", 3000, Asset.STOCK));
-        assets.add(new Asset("Alphabet Inc.", "GOOG", 40000, Asset.STOCK));
+        assets.add(new Asset("Alphabet Inc.", "GOOG", 3000, Asset.STOCK));
         assets.add(new Asset("United States Dollar", "USD", 1.3, Asset.CURRENCY));
         assets.add(new Asset("Euro", "EUR", 1.2, Asset.CURRENCY));
-        assets.add(new Asset("Oil", "", 100, Asset.COMMODITY));
-        assets.add(new Asset("Gold", "", 2000, Asset.COMMODITY));
+        assets.add(new Asset("Oil", "OIL", 100, Asset.COMMODITY));
+        assets.add(new Asset("Gold", "GOLD", 2000, Asset.COMMODITY));
     }
 
 }
