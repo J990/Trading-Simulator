@@ -18,8 +18,7 @@ public class GUI
     public void initialiseWindow()
     {
         FRAME.addWindowListener(WINDOW_CLOSER);
-        FRAME.pack();
-        FRAME.setLocationRelativeTo(null);  // Centers the window on the screen
+        resizeWindow();
         FRAME.setVisible(true);
     }
 
@@ -28,8 +27,16 @@ public class GUI
     {
         FRAME.getContentPane().removeAll();
         FRAME.getContentPane().add(p);
-        FRAME.pack();
+        resizeWindow();
         FRAME.revalidate();
+    }
+
+    // Makes all components fit inside the window
+    // Centers the window on the screen
+    public void resizeWindow()
+    {
+        FRAME.pack();
+        FRAME.setLocationRelativeTo(null);
     }
 
     // Creates and returns a panel with a consistent border, and a grid layout

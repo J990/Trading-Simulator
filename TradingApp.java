@@ -231,11 +231,12 @@ public class TradingApp extends JFrame
                 depositPrompt.addSubmitListener(new ActionListener() {
                     public void actionPerformed(ActionEvent ev) {
                         try {
-                            Boolean success = account.addMoney(Double.parseDouble(depositPrompt.getInput()));
-                            if (success) {accountBalance.setText("Balance: " + account.getConvertedBalance());}
+                            Double amount = Double.parseDouble(depositPrompt.getInput());
+                            if (amount > 1000000) {throw new NumberFormatException();}
+                            if (account.addMoney(amount)) {accountBalance.setText("Balance: " + account.getConvertedBalance()); gui.resizeWindow();}
                             else {throw new NumberFormatException();}
                         } catch (NumberFormatException e) {
-                            new WarningPrompt("Deposit value must be a number greater than 0!");
+                            new WarningPrompt("Deposit value must be a number greater than 0 and less than 1,000,000!");
                         }
                     }
                 });
