@@ -195,6 +195,10 @@ public class TradingApp extends JFrame
 
     public static void panelHandler(String destination)
     {
+        String subDest = "";
+        int partitionIdx = destination.indexOf("-");
+        if (partitionIdx != -1)
+            subDest = destination.substring(partitionIdx + 1);
         switch (destination)
         {
             case MENU:
@@ -205,6 +209,7 @@ public class TradingApp extends JFrame
                 break;
             case PORTFOLIO:
                 showPortfolioScreen();
+                if (!subDest.equals(""))
                 break;
             case MARKET:
                 showAssets();
@@ -279,6 +284,7 @@ public class TradingApp extends JFrame
             Profit assetProfit = portfolio.generateAssetProfit(a);
             if (assetProfit.getProfit() >= 0) b.setForeground(new Color(0, 180, 0));
             else b.setForeground(new Color(200, 0, 0));
+            b.addActionListener(new NavigationAction(PORTFOLIO + "-" + a.getSymbol()));
             assetButtons.add(b);
         }
 
