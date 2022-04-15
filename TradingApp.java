@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import javax.sound.sampled.Port;
 import javax.swing.*;
-
 
 public class TradingApp extends JFrame
 {
@@ -209,7 +206,7 @@ public class TradingApp extends JFrame
                 break;
             case PORTFOLIO:
                 showPortfolioScreen();
-                if (!subDest.equals(""))
+                //if (!subDest.equals("")) 
                 break;
             case MARKET:
                 showAssets();
