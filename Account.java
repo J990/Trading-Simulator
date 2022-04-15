@@ -19,7 +19,7 @@ public class Account
     }
 
     public String getConvertedBalance() {  // Formats balance to currency
-        return CurrencyConverter.convert(bankAccount.getBalance());
+        return Converter.convert(bankAccount.getBalance());
     }
 
     // Deposits money into bank

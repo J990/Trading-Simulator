@@ -29,12 +29,22 @@ public class Profit
         return trades;
     }
 
-    public double getProfit() {
+    public double getProfit()
+    {
+        update();
         return profit;
     }
 
-    public double getPercentageProfit() {
+    public double getPercentageProfit()
+    {
+        update();
         return percentageProfit;
+    }
+
+    public String getPercentageString()
+    {
+        double roundedProfit = Math.round(getPercentageProfit() * 100.0d) / 100.0d;
+        return ((profit > 0) ? "+" : "") + roundedProfit + "%";
     }
 
     public void addTrade(Trade t) throws AssetTypeException
@@ -76,6 +86,16 @@ public class Profit
         for (Trade t: trades)
             profit += t.percentageProfit();
         return profit;
+    }
+
+    @Override
+    // In the format:
+    // +£10.43 (+24.32%)
+    // -£235.07 (-8.93%)
+    public String toString()
+    {
+        update();
+        return ((profit > 0) ? "+" : "") + Converter.convert(profit) + " (" + getPercentageString() + ")";
     }
 
 }

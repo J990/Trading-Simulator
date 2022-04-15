@@ -55,7 +55,7 @@ public class Asset
     }
 
     public String getCurrencyUnitValue() {
-        return CurrencyConverter.convert(this.unitValue);
+        return Converter.convert(this.unitValue);
     }
 
     // Returns a receipt of a share bought
@@ -74,7 +74,7 @@ public class Asset
         Timer t = new Timer();
         t.scheduleAtFixedRate(new TimerTask() {
             public void run() {
-                maxChange = unitValue / 5000.0;  // Max change per second is 0.02%
+                maxChange = unitValue / 2;// / 5000.0;  // Max change per second is 0.02%
                 lastChange = Random.randomDouble(-maxChange, maxChange);
                 unitValue += lastChange;
             }

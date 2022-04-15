@@ -5,8 +5,9 @@ import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.sound.sampled.Port;
 import javax.swing.*;
-import javax.swing.JSpinner.NumberEditor;
+
 
 public class TradingApp extends JFrame
 {
@@ -30,6 +31,8 @@ public class TradingApp extends JFrame
     private static Label accountBalance;
     private static Button accountDepositButton;
     private static Button accountMenuButton;
+
+    private static Label portfolioProfit;
 
     private JPanel panel;
     private JButton portfolioButton;
@@ -163,6 +166,17 @@ public class TradingApp extends JFrame
         // Creates all the Asset objects
         initialiseAssets();
 
+        try {
+            account.openTrade(assets.get(0), 200);
+            account.openTrade(assets.get(1), 200);
+            account.openTrade(assets.get(2), 200);
+            account.openTrade(assets.get(3), 200);
+            account.openTrade(assets.get(4), 200);
+            account.openTrade(assets.get(5), 200);
+            account.openTrade(assets.get(6), 200);
+            account.openTrade(assets.get(7), 200);
+        } catch (SmallBalanceException e) {}
+
         // Sets up the back button feature
         panelStack = new Stack<String>();
         BACK_BUTTON.addActionListener(new ActionListener() { // Takes the user to the previous screen
@@ -248,7 +262,45 @@ public class TradingApp extends JFrame
 
     public static void showPortfolioScreen()
     {
-        System.out.println("p");
+        JPanel p = GUI.createPanel(0, 1);
+
+        Portfolio portfolio = account.getPortfolio();
+        ArrayList<Asset> portfolioAssets = portfolio.getAssets();
+        ArrayList<Button> assetButtons = new ArrayList<Button>();
+
+        p.add(new Label("Your Portfolio", Label.CENTER));
+        portfolioProfit = new Label(portfolio.toString(), Label.CENTER);
+        p.add(portfolioProfit);
+
+        for (Asset a: portfolioAssets)
+        {
+            String title = a.toString() + " " + Converter.convert(portfolio.getCurrentAssetValue(a));
+            Button b = GUI.createButton(p, title);
+            Profit assetProfit = portfolio.generateAssetProfit(a);
+            if (assetProfit.getProfit() >= 0) b.setForeground(new Color(0, 180, 0));
+            else b.setForeground(new Color(200, 0, 0));
+            assetButtons.add(b);
+        }
+
+        Timer t = new Timer();
+        t.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                portfolioProfit.setText(portfolio.toString());
+                for (int i = 0; i < portfolioAssets.size(); i++)
+                {
+                    Asset a = portfolioAssets.get(i);
+                    Button b = assetButtons.get(i);
+                    Profit assetProfit = portfolio.generateAssetProfit(a);
+                    if (assetProfit.getProfit() >= 0) b.setForeground(new Color(0, 180, 0));
+                    else b.setForeground(new Color(200, 0, 0));
+                    String title = a.toString() + " " + Converter.convert(portfolio.getCurrentAssetValue(a));
+                    b.setLabel(title);
+                }
+            }
+        }, 0, 1500);
+
+        p.add(BACK_BUTTON);
+        gui.displayPanel(p);
     }
 
     public static void showAssets()
