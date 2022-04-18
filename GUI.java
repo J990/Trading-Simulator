@@ -48,6 +48,21 @@ public class GUI
         return p;
     }
 
+    public static Label createLabel(JPanel p)
+    {
+        Label l = new Label();
+        l.setAlignment(Label.CENTER);
+        p.add(l);
+        return l;
+    }
+
+    public static Label createLabel(JPanel p, String text)
+    {
+        Label l = new Label(text, Label.CENTER);
+        p.add(l);
+        return l;
+    }
+
     // Creates and returns a button with a NavigationAction listener
     public static Button createNavigationButton(String title, String destination)
     {

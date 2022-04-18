@@ -37,7 +37,7 @@ public class TradingApp extends JFrame
     private Button withdrawButton;
     private Label portfolioContainer;
     private ArrayList<Label> assetPrices = new ArrayList<Label>();
-    static ArrayList<Asset> assets = new ArrayList<Asset>();
+    static AssetManager assets = new AssetManager();
 
     public TradingApp()
     {
@@ -195,7 +195,10 @@ public class TradingApp extends JFrame
         String subDest = "";
         int partitionIdx = destination.indexOf("-");
         if (partitionIdx != -1)
+        {
             subDest = destination.substring(partitionIdx + 1);
+            destination = destination.substring(0, partitionIdx);
+        }
         switch (destination)
         {
             case MENU:
@@ -206,10 +209,10 @@ public class TradingApp extends JFrame
                 break;
             case PORTFOLIO:
                 showPortfolioScreen();
-                //if (!subDest.equals("")) 
+                if (!subDest.equals("")) showAsset(assets.getAssetBySymbol(subDest));
                 break;
             case MARKET:
-                showAssets();
+                showMarket();
                 break;
             default:
                 throw new DestinationError(destination);  // Invalid panel destination name
@@ -306,7 +309,44 @@ public class TradingApp extends JFrame
         gui.displayPanel(p);
     }
 
-    public static void showAssets()
+    public static void showAsset(Asset a)
+    {
+        if (a == null) return;
+
+        JPanel p = GUI.createPanel(0, 1);
+
+        Portfolio portfolio = account.getPortfolio();
+        Label investmentValue = GUI.createLabel(p);
+        Label unitValue = GUI.createLabel(p);
+
+        Timer t = new Timer();
+        t.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                investmentValue.setText("Your Investment: " + Converter.convert(portfolio.getCurrentAssetValue(a)));
+                unitValue.setText(a.toString() + " @ " + a.getCurrencyUnitValue());
+            }
+        }, 0, 1500);
+
+        Button buyButton = GUI.createButton(p, "Buy");
+        Button sellButton = GUI.createButton(p, "Sell");
+
+        buyButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                new BuyPrompt(a);
+            }
+        });
+
+        sellButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                new SellPrompt(a);
+            }
+        });
+
+        p.add(BACK_BUTTON);
+        gui.displayPanel(p);
+    }
+
+    public static void showMarket()
     {
         System.out.println("l");
     }
