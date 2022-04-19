@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.awt.event.*;
 
 public class WarningPrompt extends Prompt
 {
@@ -20,11 +19,7 @@ public class WarningPrompt extends Prompt
         panel.add(new Label(warningText));
         okButton = GUI.createButton(panel, "OK");
 
-        okButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ev) {
-                dispose();
-            }
-        });
+        okButton.addActionListener(new CloseAction());
 
         this.add(panel);
         gui.initialiseWindow();

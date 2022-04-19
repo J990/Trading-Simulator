@@ -7,11 +7,13 @@ public class Account
 {
     private Bank bankAccount;
     private Portfolio portfolio;
+    private Trade lastTrade;
     
     public Account()
     {
         bankAccount = new Bank();
         portfolio = new Portfolio();
+        lastTrade = new Trade(new Asset("default", "DEFAULT", 0, Asset.STOCK), 0, 0);
     }
 
     public double getRawBalance() {  // Returns the balance
@@ -49,15 +51,23 @@ public class Account
         return portfolio;
     }
 
-    public void openTrade(Asset a, double price) throws SmallBalanceException
+    public boolean openTrade(Asset a, double price) throws SmallBalanceException
     {
+        if (price < 0 || price > 10000000) return false;
         double units = price / a.getRawUnitValue();
         try {
             removeMoney(price);
-            portfolio.addTrade(a.createTrade(units));
+            lastTrade = a.createTrade(units);
+            portfolio.addTrade(lastTrade);
+            return true;
         } catch (SmallBalanceException err) {
             throw err;
         }
+    }
+
+    public double getRecentTradeUnits()
+    {
+        return lastTrade.getUnits();
     }
 
     public void closeTrade(Trade t) throws UnknownTradeException

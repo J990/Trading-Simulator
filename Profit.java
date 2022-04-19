@@ -18,7 +18,7 @@ public class Profit
         percentageProfit = 0.0d;
     }
 
-    // Use to calculate profit for one type of asset
+    // Used to calculate profit for trades of only one asset
     public Profit(Asset a)
     {
         this();
@@ -44,21 +44,30 @@ public class Profit
     public String getPercentageString()
     {
         double roundedProfit = Math.round(getPercentageProfit() * 100.0d) / 100.0d;
-        return ((profit > 0) ? "+" : "") + roundedProfit + "%";
+        return ((roundedProfit > 0) ? "+" : "") + roundedProfit + "%";
     }
 
-    public void addTrade(Trade t) throws AssetTypeException
+    public void addTrade(Trade t) throws AssetCategoryException
     {
         if (asset != null)
+        {
             if (t.getAsset().equals(asset))  // Points to the same asset
                 trades.add(t);
             else
-                throw new AssetTypeException(asset, t.getAsset());
+                throw new AssetCategoryException(asset, t.getAsset());
+        }
         else
             trades.add(t);
         
         profit += t.profit();
         percentageProfit += t.percentageProfit();
+    }
+
+    public void removeTrade(Trade t) throws UnknownTradeException
+    {
+        if (trades.contains(t))
+            trades.remove(t);
+        else {throw new UnknownTradeException(t);}
     }
 
     public void update()

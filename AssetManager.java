@@ -1,6 +1,7 @@
 import java.util.ArrayList;
+import java.util.Comparator;
 
-public class AssetManager extends ArrayList<Asset>
+public class AssetManager extends ArrayList<Asset> implements Comparator<Asset>
 {
     public Asset getAssetByName(String n)
     {
@@ -16,11 +17,17 @@ public class AssetManager extends ArrayList<Asset>
         return null;
     }
 
-    public AssetManager getAssetsOfType(String t)
+    public AssetManager getAssetsOfCategory(String t)
     {
         AssetManager m = new AssetManager();
         for (Asset a: this)
-            if (t.toLowerCase().equals(a.getAssetType())) m.add(a);
+            if (t.toLowerCase().equals(a.getCategory())) m.add(a);
         return m;
+    }
+
+    public void sortByName() {sort(this);}
+
+    public int compare(Asset o1, Asset o2) {
+        return o1.compareTo(o2);
     }
 }

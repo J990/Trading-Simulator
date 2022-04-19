@@ -43,7 +43,7 @@ public class GUI
     public static JPanel createPanel(int rows, int columns)
     {
         JPanel p = new JPanel();
-        p.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+        p.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
         p.setLayout(new GridLayout(rows, columns));
         return p;
     }

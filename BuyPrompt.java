@@ -3,42 +3,42 @@ import java.awt.event.*;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class BuyPrompt extends InputPrompt
+public class BuyPrompt extends InputPrompt implements DynamicPrompt
 {
+    private Account account;
     private Asset asset;
-    private final Label TITLE;
     private Label buyPrice;
 
     public BuyPrompt(Asset a)
     {
         super("Amount to buy", "Buy");
+        account = TradingApp.account;
         asset = a;
-        TITLE = GUI.createLabel(panel, "Buy " + asset.toString());
         finalisePrompt();
     }
 
     public void finalisePrompt()
     {
         buyPrice = GUI.createLabel(panel);
-        updatePrice();
+        update();
 
         addSubmitListener(new ActionListener() {
             public void actionPerformed(ActionEvent ev) {
                 try {
                     double amount = Double.parseDouble(getInput());
-                    if (amount <= 0 || amount >= 10000000) throw new NumberFormatException();
-                    TradingApp.account.openTrade(asset, amount);
+                    if (!account.openTrade(asset, amount)) throw new NumberFormatException();
+                    new WarningPrompt("Purchase of " + account.getRecentTradeUnits() + " units successful!");
                 } catch (SmallBalanceException | NumberFormatException e) {
                     if (e instanceof NumberFormatException) new WarningPrompt("Buy value must be a number greater than 0 and less than 10,000,000!");
                     else if (e instanceof SmallBalanceException) new WarningPrompt("Balance is too low! Balance: " + TradingApp.account.getConvertedBalance());
                 }
             }
         });
-
+        GUI.createLabel(panel, "Buy " + asset.toString());
         gui.displayPanel(panel);
     }
 
-    public void updatePrice()
+    public void update()
     {
         Timer t = new Timer();
         t.scheduleAtFixedRate(new TimerTask() {

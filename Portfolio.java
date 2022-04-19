@@ -65,6 +65,7 @@ public class Portfolio
         {
             trades.remove(t);
             removeAsset(t.getAsset());
+            portfolioProfit.removeTrade(t);
             receipts.add(t.generateReceipt());
         }
         else {
@@ -93,7 +94,7 @@ public class Portfolio
         {
             try {
                 assetProfits.addTrade(t);
-            } catch (AssetTypeException e) {/* Do nothing if wrong asset */}
+            } catch (AssetCategoryException e) {/* Do nothing if wrong asset */}
         }
         return assetProfits;
     }
@@ -107,11 +108,11 @@ public class Portfolio
         return filteredTrades;
     }
 
-    public ArrayList<Trade> filterByAssetType(String assetType)
+    public ArrayList<Trade> filterByAssetCategory(String assetCategory)
     {
         ArrayList<Trade> filteredTrades = new ArrayList<Trade>();
         for (Trade t: trades)
-            if (t.getAsset().getAssetType().equals(assetType.toLowerCase()))
+            if (t.getAsset().getCategory().equals(assetCategory.toLowerCase()))
                 filteredTrades.add(t);
         return filteredTrades;
     }

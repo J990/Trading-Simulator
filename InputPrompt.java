@@ -23,15 +23,12 @@ public class InputPrompt extends Prompt
 
         panel.add(new Label(inputLabelName));
         input = GUI.createTextField(panel, 20);
+        panel.add(new Label());  // So the submit button is at the bottom right
 		submit = GUI.createButton(panel, submitLabelName);
 
         // Default listener for the submit button
         // Closes the window when pressed
-		submit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ev) {
-		    	dispose();
-			}
-	    });
+		submit.addActionListener(new CloseAction());
 
         this.add(panel);
         gui.initialiseWindow();
@@ -41,8 +38,5 @@ public class InputPrompt extends Prompt
         return input.getText();
     }
 
-    public void addSubmitListener(ActionListener listener)
-	{
-		submit.addActionListener(listener);
-    }    
+    public void addSubmitListener(ActionListener l) {submit.addActionListener(l);}    
 }

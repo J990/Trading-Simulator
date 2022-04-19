@@ -65,5 +65,15 @@ public final class Trade implements StaticAsset
     {
         
     }
+
+    // In the format:
+    // OPEN: 3.2456 UNITS @ £354.97 VALUE: £2,798.54 (+123.54%)
+    public String toString() {
+        Profit p = new Profit(ASSET);
+        p.addTrade(this);
+        String s = "OPEN: " + UNITS + " UNITS @ " + Converter.convert(OPEN_UNIT_PRICE) + " ";
+        s += "VALUE: " + Converter.convert(currentValue()) + " (" + p.getPercentageString() + ")";
+        return s;
+    }
     
 }
