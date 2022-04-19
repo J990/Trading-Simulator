@@ -1,6 +1,6 @@
 import java.util.Date;
 
-public class TransferRecord extends Record
+public class TransferRecord implements Record
 {
     Date date;
     double amount;
@@ -17,5 +17,14 @@ public class TransferRecord extends Record
 
     public double getAmount() {
         return amount;
+    }
+
+    public String toJSON()
+    {
+        // date.getTime() (use milliseconds to rebuild date later on)
+        JSONObject obj = new JSONObject();
+        obj.put("amount", amount);
+        obj.put("date", date.getTime());
+        return obj.toString();
     }
 }

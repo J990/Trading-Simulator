@@ -1,6 +1,6 @@
 import java.util.Date;
 
-public final class Trade implements StaticAsset
+public final class Trade implements StaticAsset, Record
 {
     private final Asset ASSET;
     private final double OPEN_UNIT_PRICE;  // Price per unit at time trade occurred
@@ -56,16 +56,6 @@ public final class Trade implements StaticAsset
         return profit() / OPEN_VALUE * 100.0d;
     }
 
-    public AssetRecord generateReceipt()
-    {
-        return new AssetRecord(this);
-    }
-
-    public void closeTrade()
-    {
-        
-    }
-
     // In the format:
     // OPEN: 3.2456 UNITS @ £354.97 VALUE: £2,798.54 (+123.54%)
     public String toString() {
@@ -74,6 +64,16 @@ public final class Trade implements StaticAsset
         String s = "OPEN: " + UNITS + " UNITS @ " + Converter.convert(OPEN_UNIT_PRICE) + " ";
         s += "VALUE: " + Converter.convert(currentValue()) + " (" + p.getPercentageString() + ")";
         return s;
+    }
+
+    public String toJSON()
+    {
+        JSONObject obj = new JSONObject();
+        obj.put("assetSymbol", ASSET.getSymbol());
+        obj.put("units", UNITS);
+        obj.put("unitPrice", OPEN_UNIT_PRICE);
+        obj.put("date", DATE.getTime());
+        return obj.toString();
     }
     
 }

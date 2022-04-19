@@ -26,7 +26,7 @@ public class TradingApp
     private static Label portfolioProfit;
 
     public static AssetManager assets = new AssetManager();
-    private static AssetManager shownAssets = assets;
+    public static AssetManager shownAssets = assets;
 
     public static void panelHandler(String destination)
     {
@@ -184,70 +184,30 @@ public class TradingApp
         gui.displayPanel(p);
     }
 
-    public static void showMarket()
-    {
+    public static void showMarket() {
         JPanel p = GUI.createPanel(0, 2);
-        
+
         ArrayList<Button> assetButtons = new ArrayList<Button>();
         ArrayList<Label> assetLabels = new ArrayList<Label>();
 
         p.add(new Label("Stock Market"));
         Label assetCategory = GUI.createLabel(p, "All Assets");
-        final String all = "All";
-        final String commodities = "Commodities";
-        final String currencies = "Currencies";
-        final String cryptocurrencies = "Cryptocurrencies";
-        final String stocks = "Stocks";
-        String[] filterOptions = { all, commodities, currencies, cryptocurrencies, stocks };
-        JComboBox<String> filters = new JComboBox<>(filterOptions);
-
-        filters.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ev) {
-                switch ((String)filters.getSelectedItem())
-                {
-                    case all:
-                        shownAssets = assets;
-                        assetCategory.setText("All Assets");
-                        break;
-                    case commodities:
-                        shownAssets = assets.getAssetsOfCategory(Asset.COMMODITY);
-                        assetCategory.setText("Commodities");
-                        break;
-                    case currencies:
-                        shownAssets = assets.getAssetsOfCategory(Asset.CURRENCY);
-                        assetCategory.setText("Currencies");
-                        break;
-                    case cryptocurrencies:
-                        shownAssets = assets.getAssetsOfCategory(Asset.CRYPTOCURRENCY);
-                        assetCategory.setText("Cryptocurrencies");
-                        break;
-                    case stocks:
-                        shownAssets = assets.getAssetsOfCategory(Asset.STOCK);
-                        assetCategory.setText("Stocks");
-                        break;
-                    default:
-                        break;
-                }
-                showMarket();  // Refresh screen
-            }
-        });
+        AssetFilter filters = new AssetFilter(assetCategory);
+        
         p.add(filters);
-        p.add(new Label());  // To move assets to the correct line
+        p.add(new Label());  // To move assets to the same line as their label
 
-        for (Asset a: shownAssets)
-        {
+        for (Asset a: shownAssets) {
             Button b = GUI.createButton(p, a.toString());
             Label l = GUI.createLabel(p, a.getCurrencyUnitValue());
             b.addActionListener(new NavigationAction(MARKET + "-" + a.getSymbol()));
             assetButtons.add(b);
             assetLabels.add(l);
         }
-
         Timer t = new Timer();
         t.scheduleAtFixedRate(new TimerTask() {
             public void run() {
-                for (int i = 0; i < shownAssets.size(); i++)
-                {
+                for (int i = 0; i < shownAssets.size(); i++) {
                     try {
                         Asset a = shownAssets.get(i);
                         Label l = assetLabels.get(i);
@@ -257,7 +217,6 @@ public class TradingApp
                 }
             }
         }, 0, 1500);
-
         p.add(BACK_BUTTON);
         gui.displayPanel(p);
     }
@@ -350,7 +309,7 @@ public class TradingApp
         assets.add(new Asset("Unity Software Inc.", "U", 66, Asset.STOCK));
         assets.add(new Asset("Tesla", "TSLA", 1000, Asset.STOCK));
         assets.add(new Asset("GameStop Corp.", "GME", 150, Asset.STOCK));
-        
+
         assets.sortByName();
     }
 }

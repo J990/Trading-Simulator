@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class Bank
+public class Bank implements Record
 {
     private double balance;
     private ArrayList<TransferRecord> depositHistory;
@@ -55,6 +55,15 @@ public class Bank
 
     public ArrayList<TransferRecord> getWithdrawalHistory() {
         return withdrawalHistory;
+    }
+
+    public String toJSON()
+    {
+        JSONObject obj = new JSONObject();
+        obj.put("balance", balance);
+        obj.putRecordArray("deposits", depositHistory);
+        obj.putRecordArray("withdrawals", withdrawalHistory);
+        return obj.toString();
     }
 
 }

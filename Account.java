@@ -51,6 +51,10 @@ public class Account
         return portfolio;
     }
 
+    public Bank getBankAccount() {
+        return bankAccount;
+    }
+
     public boolean openTrade(Asset a, double price) throws SmallBalanceException
     {
         if (price < 0 || price > 10000000) return false;

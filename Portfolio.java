@@ -1,17 +1,15 @@
 import java.util.ArrayList;
 
-public class Portfolio
+public class Portfolio implements Record
 {
     private ArrayList<Trade> trades;  // Keeps track of all the trades made
     private ArrayList<Asset> assets;
-    private ArrayList<AssetRecord> receipts;
     private Profit portfolioProfit;
 
     public Portfolio()
     {
         trades = new ArrayList<Trade>();
         assets = new ArrayList<Asset>();
-        receipts = new ArrayList<AssetRecord>();
         portfolioProfit = new Profit();
     }
 
@@ -66,7 +64,6 @@ public class Portfolio
             trades.remove(t);
             removeAsset(t.getAsset());
             portfolioProfit.removeTrade(t);
-            receipts.add(t.generateReceipt());
         }
         else {
             throw new UnknownTradeException(t);
@@ -117,10 +114,16 @@ public class Portfolio
         return filteredTrades;
     }
 
-    @Override
     public String toString()
     {
         return Converter.convert(getCurrentValue()) + " (" + portfolioProfit.getPercentageString() + ")";
+    }
+
+    public String toJSON()
+    {
+        JSONObject obj = new JSONObject();
+        obj.putRecordArray("trades", trades);
+        return obj.toString();
     }
 
 }

@@ -1,7 +1,7 @@
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class Asset implements Comparable<Asset>
+public class Asset implements Comparable<Asset>, Record
 {
     private String name;
     private String symbol;
@@ -9,6 +9,7 @@ public class Asset implements Comparable<Asset>
     private String category;
     private double maxChange;
     private double lastChange;  // Last change in price
+    private Timer updater;
 
     static final String COMMODITY = "commodity";
     static final String CRYPTOCURRENCY = "cryptocurrency";
@@ -63,16 +64,11 @@ public class Asset implements Comparable<Asset>
         return new Trade(this, getRawUnitValue(), units);
     }
 
-    public String toString()
-    {
-        return String.format("%s (%s)", this.name, this.symbol);
-    }
-
     // Updates the asset price
     private void updateUnitPrice()
     {
-        Timer t = new Timer();
-        t.scheduleAtFixedRate(new TimerTask() {
+        updater = new Timer();
+        updater.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 maxChange = unitValue / 2500.0d;  // Max change per second is 0.02%
                 lastChange = Random.randomDouble(-maxChange, maxChange);
@@ -81,8 +77,29 @@ public class Asset implements Comparable<Asset>
         }, 0, 1000);
     }
 
+    public void stopUpdate()
+    {
+        updater.cancel();
+        updater.purge();
+    }
+
     public int compareTo(Asset o) {
         return name.compareTo(o.getName());
+    }
+
+    public String toString()
+    {
+        return String.format("%s (%s)", this.name, this.symbol);
+    }
+
+    public String toJSON()
+    {
+        JSONObject obj = new JSONObject();
+        obj.put("name", name);
+        obj.put("symbol", symbol);
+        obj.put("category", category);
+        obj.put("value", unitValue);
+        return obj.toString();
     }
 
 }
