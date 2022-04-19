@@ -12,31 +12,32 @@ public class TradingApp
 
     private static JFrame frame;  // Main frame which displays all panels
     private static GUI gui;
-    private static final Button BACK_BUTTON = new Button("Back");
+    private static final Button BACK_BUTTON = new Button("Back");  // Back button to go to the previous panel
 
-    private static Stack<String> panelStack;
+    private static Stack<String> panelStack;  // Holds the panels in the order they were visited
+
+    // Names of destinations to panels
     private static final String MENU = "menu";
     private static final String ACCOUNT = "account";
     private static final String PORTFOLIO = "portfolio";
     private static final String MARKET = "market";
 
-    private static Label accountBalance;
-    private static Button accountDepositButton;
-
-    private static Label portfolioProfit;
-
+    // Holds all assets in the app
     public static AssetManager assets = new AssetManager();
+    // Holds all the assets being shown in the market panel
     public static AssetManager shownAssets = assets;
 
+    // Directs the gui to display the correct panel
     public static void panelHandler(String destination)
     {
-        String subDest = "";
-        int partitionIdx = destination.indexOf("-");
+        String subDest = "";  // will contain an asset symbol if filled out
+        int partitionIdx = destination.indexOf("-");  // Position of the sub destination splitter
         if (partitionIdx != -1)
-        {
+        {  // Splits the destination and subDestination
             subDest = destination.substring(partitionIdx + 1);
             destination = destination.substring(0, partitionIdx);
         }
+
         switch (destination)
         {
             case MENU:
@@ -56,36 +57,40 @@ public class TradingApp
             default:
                 throw new DestinationError(destination);  // Invalid panel destination name
         }
-        panelStack.push(destination);
+        panelStack.push(destination);  // To show that this panel has been visited
     }
 
     // Shows the menu panel which is shown upon starting the app
     // Allows navigation to: Account, Portfolio, Asset Market
     public static void showMenu()
     {
-        JPanel p = GUI.createPanel(0, 1);
+        JPanel p = GUI.createPanel(0, 1);  // Panel being shown
+
         p.add(new Label("Trading Simluator 1.0", Label.CENTER));
+        // Navigates to the main parts of the app
         p.add(GUI.createNavigationButton(p, "View Account", ACCOUNT));
         p.add(GUI.createNavigationButton(p, "View Portfolio", PORTFOLIO));
         p.add(GUI.createNavigationButton(p, "Buy Assets", MARKET));
-        gui.displayPanel(p);
+
+        gui.displayPanel(p);  // Switches out previous panel and displays this one
     }
 
     // Shows the account management panel
-    // Displays the user's account balance and lets them deposit money into the account
+    // Displays the user's account balance and lets them open the deposit prompt to deposit money into the account
     public static void showAccountScreen()
     {
         JPanel p = GUI.createPanel(0, 1);
-        p.add(new Label("Account Manager", Label.CENTER));
-        accountBalance = GUI.createLabel(p, "Balance: " + account.getConvertedBalance());
-        accountDepositButton = GUI.createButton(p, "Deposit");
 
-        accountDepositButton.addActionListener(new ActionListener() {
+        p.add(new Label("Account Manager", Label.CENTER));
+        Label accountBalance = GUI.createLabel(p, "Balance: " + account.getConvertedBalance());
+
+        Button accountDepositButton = GUI.createButton(p, "Deposit");
+        accountDepositButton.addActionListener(new ActionListener() {  // Opens deposit prompt
             public void actionPerformed(ActionEvent ev) {
                 InputPrompt depositPrompt = new InputPrompt("Enter amount: ", "Deposit");
                 depositPrompt.addSubmitListener(new ActionListener() {
                     public void actionPerformed(ActionEvent ev) {
-                        try {
+                        try {  // Validates input and adds money to the account
                             double amount = Double.parseDouble(depositPrompt.getInput());
                             if (amount > 1000000) {throw new NumberFormatException();}
                             if (account.addMoney(amount)) {accountBalance.setText("Balance: " + account.getConvertedBalance()); gui.resizeWindow();}
@@ -98,34 +103,41 @@ public class TradingApp
             }
         });
 
-        p.add(BACK_BUTTON);
+        p.add(BACK_BUTTON);  // Shows back button
         gui.displayPanel(p);
     }
 
+    // Displays the value of the user's portfolio
+    // Displays the total value of each investment by asset
+    // Allows the user to view the value and profit of each individual asset investment
     public static void showPortfolioScreen()
     {
         JPanel p = GUI.createPanel(0, 2);
+
         Portfolio portfolio = account.getPortfolio();
         ArrayList<Asset> portfolioAssets = portfolio.getAssets();
+
+        // Buttons and labels to show the asset and the corresponding investment value
         ArrayList<Button> assetButtons = new ArrayList<Button>();
         ArrayList<Label> assetLabels = new ArrayList<Label>();
 
         p.add(new Label("My Portfolio", Label.CENTER));
-        portfolioProfit = new Label(portfolio.toString(), Label.CENTER);
+        Label portfolioProfit = new Label(portfolio.toString(), Label.CENTER);
         p.add(portfolioProfit);
 
+        // Creates the buttons and labels which show the asset and investment values
         for (Asset a: portfolioAssets)
         {
             Profit assetProfit = portfolio.generateAssetProfit(a);
-            Button b = GUI.createButton(p, a.toString());
+            Button b = GUI.createNavigationButton(p, a.toString(), PORTFOLIO + "-" + a.getSymbol());
             Label l = GUI.createLabel(p, Converter.convert(portfolio.getCurrentAssetValue(a)) + "(" + Converter.convertWithSign(assetProfit.getProfit())+ ")");
-            if (assetProfit.getProfit() >= 0) l.setForeground(new Color(0, 180, 64));
-            else l.setForeground(new Color(200, 0, 0));
-            b.addActionListener(new NavigationAction(PORTFOLIO + "-" + a.getSymbol()));
+            if (assetProfit.getProfit() >= 0) l.setForeground(new Color(0, 180, 64));  // Green = profit
+            else l.setForeground(new Color(200, 0, 0));  // Red = loss
             assetButtons.add(b);
             assetLabels.add(l);
         }
 
+        // Updates the values of investments shown on the screen
         Timer t = new Timer();
         t.scheduleAtFixedRate(new TimerTask() {
             public void run() {
@@ -193,7 +205,7 @@ public class TradingApp
         p.add(new Label("Stock Market"));
         Label assetCategory = GUI.createLabel(p, "All Assets");
         AssetFilter filters = new AssetFilter(assetCategory);
-        
+
         p.add(filters);
         p.add(new Label());  // To move assets to the same line as their label
 

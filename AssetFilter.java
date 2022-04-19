@@ -21,6 +21,9 @@ public class AssetFilter extends JComboBox<String>
         addActionListener(this);
     }
 
+    // Upon changing the selected option
+    // Sets the header showing the asset category
+    // Sets the assets that are to be shown on the screen
     public void actionPerformed(ActionEvent e)
     {
         switch ((String)getSelectedItem()) {

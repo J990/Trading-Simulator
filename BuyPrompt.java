@@ -17,6 +17,7 @@ public class BuyPrompt extends InputPrompt implements DynamicPrompt
         finalisePrompt();
     }
 
+    // Adds to the initialisePrompt method that has been written in InputPrompt
     public void finalisePrompt()
     {
         buyPrice = GUI.createLabel(panel);

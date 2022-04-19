@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 
+// Keeps a balance for the user
+// Keeps track of all transfers made to and from the account
 public class Bank implements Record
 {
     private double balance;

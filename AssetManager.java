@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 import java.util.Comparator;
 
+
+// Allows searching for specific assets
+// And sorting
 public class AssetManager extends ArrayList<Asset> implements Comparator<Asset>, Record
 {
     public Asset getAssetByName(String n)

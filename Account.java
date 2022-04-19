@@ -7,7 +7,7 @@ public class Account
 {
     private Bank bankAccount;
     private Portfolio portfolio;
-    private Trade lastTrade;
+    private Trade lastTrade;  // The last trade that was opened by the user
     
     public Account()
     {
@@ -55,6 +55,9 @@ public class Account
         return bankAccount;
     }
 
+    // Takes out money from the bankAccount if there is enough money in it to open the trade
+    // Validates the price the user pays
+    // Adds the trade to the portfolio
     public boolean openTrade(Asset a, double price) throws SmallBalanceException
     {
         if (price < 0 || price > 10000000) return false;
@@ -69,11 +72,12 @@ public class Account
         }
     }
 
-    public double getRecentTradeUnits()
-    {
+    public double getRecentTradeUnits() {
         return lastTrade.getUnits();
     }
 
+    // Removes a trade from the user's portfolio
+    // Deposits the value of the trade
     public void closeTrade(Trade t) throws UnknownTradeException
     {
         try {

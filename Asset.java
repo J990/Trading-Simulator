@@ -59,7 +59,7 @@ public class Asset implements Comparable<Asset>, Record
         return Converter.convert(this.unitValue);
     }
 
-    // Returns a receipt of a share bought
+    // Opens a trade referencing this asset
     public Trade createTrade(double units) {
         return new Trade(this, getRawUnitValue(), units);
     }
@@ -70,15 +70,15 @@ public class Asset implements Comparable<Asset>, Record
         updater = new Timer();
         updater.scheduleAtFixedRate(new TimerTask() {
             public void run() {
-                maxChange = unitValue / 2500.0d;  // Max change per second is 0.02%
+                maxChange = unitValue / 2500.0d;  // Max change per second is 0.04% of current price
                 lastChange = Random.randomDouble(-maxChange, maxChange);
                 unitValue += lastChange;
             }
         }, 0, 1000);
     }
 
-    public void stopUpdate()
-    {
+    // Stops the asset price from updating
+    public void stopUpdate() {
         updater.cancel();
         updater.purge();
     }
