@@ -66,7 +66,7 @@ public class TradingApp
     {
         JPanel p = GUI.createPanel(0, 1);  // Panel being shown
 
-        p.add(new Label("Trading Simluator 1.0", Label.CENTER));
+        p.add(new Label("Trading Simulator 1.0", Label.CENTER));
         // Navigates to the main parts of the app
         p.add(GUI.createNavigationButton(p, "View Account", ACCOUNT));
         p.add(GUI.createNavigationButton(p, "View Portfolio", PORTFOLIO));
